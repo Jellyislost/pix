@@ -1,1 +1,445 @@
+/* =============================================
+   PHOTO//SYS — Persona 3 Style Gallery
+   style.css
+   ============================================= */
 
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  background: #04060f;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Prevent flash of unstyled content */
+#root {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+#root.ready {
+  opacity: 1;
+}
+
+/* ─── ROOT ─────────────────────────────────── */
+.p3-root {
+  position: relative;
+  width: 100%;
+  min-height: 100svh;
+  background: #04060f;
+  overflow-x: hidden;
+  font-family: 'Bebas Neue', sans-serif;
+  color: #fff;
+}
+
+/* ─── PERSISTENT CHROME ─────────────────────── */
+.p3-stripe {
+  position: fixed; right: 0; top: 0; bottom: 0;
+  width: 5px; background: #c4001a;
+  z-index: 200; pointer-events: none;
+}
+.p3-stripe2 {
+  position: fixed; right: 9px; top: 0; bottom: 0;
+  width: 2px; background: rgba(196, 0, 26, 0.22);
+  z-index: 200; pointer-events: none;
+}
+.p3-scanlines {
+  position: fixed; inset: 0;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent, transparent 3px,
+    rgba(0, 0, 0, 0.07) 3px, rgba(0, 0, 0, 0.07) 4px
+  );
+  z-index: 199; pointer-events: none;
+}
+.p3-corner-tl {
+  position: fixed; top: 14px; left: 14px;
+  width: 22px; height: 22px;
+  border-top: 2px solid rgba(196, 0, 26, 0.6);
+  border-left: 2px solid rgba(196, 0, 26, 0.6);
+  z-index: 201; pointer-events: none;
+}
+.p3-corner-br {
+  position: fixed; bottom: 14px; right: 20px;
+  width: 22px; height: 22px;
+  border-bottom: 2px solid rgba(196, 0, 26, 0.6);
+  border-right: 2px solid rgba(196, 0, 26, 0.6);
+  z-index: 201; pointer-events: none;
+}
+.p3-logo {
+  position: fixed; top: 12px; left: 44px; z-index: 201;
+  font-size: 11px; letter-spacing: 6px;
+  color: rgba(196, 0, 26, 0.65);
+  pointer-events: none; user-select: none;
+}
+.p3-sys-time {
+  position: fixed; top: 12px; right: 24px; z-index: 201;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px; color: rgba(255, 255, 255, 0.18);
+  letter-spacing: 2px; pointer-events: none;
+}
+
+/* ─── MENU SCREEN ───────────────────────────── */
+.p3-menu-screen {
+  position: relative; width: 100%; min-height: 100svh;
+  display: flex; align-items: center;
+}
+.p3-orb {
+  position: absolute; right: -15vw; top: 50%;
+  transform: translateY(-50%);
+  width: 65vw; height: 65vw;
+  max-width: 700px; max-height: 700px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #0d2560 0%, #060d2a 60%, transparent 100%);
+  z-index: 1; pointer-events: none;
+}
+.p3-orb-ring {
+  position: absolute; right: -15vw; top: 50%;
+  transform: translateY(-50%);
+  width: 65vw; height: 65vw;
+  max-width: 700px; max-height: 700px;
+  border-radius: 50%;
+  border: 1px solid rgba(42, 92, 168, 0.12);
+  z-index: 2; pointer-events: none;
+}
+.p3-bg-text {
+  position: absolute; bottom: -2vw; left: -1vw;
+  font-size: clamp(120px, 20vw, 280px);
+  color: rgba(255, 255, 255, 0.022);
+  letter-spacing: -8px;
+  pointer-events: none; z-index: 2;
+  white-space: nowrap; user-select: none;
+}
+.p3-mask {
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(4, 6, 15, 0.88) 0%,
+    rgba(4, 6, 15, 0.45) 55%,
+    transparent 100%
+  );
+  z-index: 3; pointer-events: none;
+}
+.p3-menu-nav {
+  position: relative; z-index: 20;
+  padding: 48px 0 48px 48px;
+  display: flex; flex-direction: column;
+}
+
+/* Menu rows */
+.p3-row {
+  position: relative; cursor: pointer;
+  display: flex; align-items: center;
+  line-height: 1; text-decoration: none;
+  opacity: 0; transform: translateX(-36px);
+  transition: opacity 0.38s ease, transform 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.p3-row.mounted {
+  opacity: 1; transform: translateX(0);
+}
+.p3-hi {
+  position: absolute; left: -48px; top: 50%;
+  transform: translateY(-50%) scaleX(0);
+  transform-origin: left center;
+  background: #f38493; z-index: -1;
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+.p3-row.active .p3-hi {
+  transform: translateY(-50%) scaleX(1);
+}
+.p3-lbl {
+  font-family: 'Bebas Neue', sans-serif;
+  color: #2a5ca8; letter-spacing: 2px;
+  line-height: 0.85; position: relative; z-index: 1;
+  transition: color 0.12s ease, opacity 0.12s ease;
+}
+.p3-row.active .p3-lbl { color: #fff; }
+.p3-row:hover:not(.active) .p3-lbl { color: #4a82c8; }
+
+.p3-menu-deco {
+  position: absolute; left: 48px; bottom: 48px;
+  z-index: 20; opacity: 0;
+  transition: opacity 0.5s ease 1s;
+}
+.p3-menu-deco.mounted { opacity: 1; }
+.p3-deco-line {
+  width: 40px; height: 2px;
+  background: rgba(196, 0, 26, 0.5);
+  margin-bottom: 6px;
+}
+.p3-deco-text {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px; letter-spacing: 3px;
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.p3-hint {
+  position: fixed; bottom: 22px; right: 22px;
+  z-index: 202; display: flex;
+  flex-direction: column; align-items: flex-end; gap: 5px;
+  opacity: 0; transition: opacity 0.5s ease 0.9s;
+}
+.p3-hint.mounted { opacity: 1; }
+.p3-hint-row {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.25);
+}
+.p3-hint-key {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 3px; padding: 1px 6px; font-size: 10px;
+}
+
+/* ─── GALLERY SCREEN ────────────────────────── */
+.p3-gallery-screen {
+  position: relative; width: 100%; min-height: 100svh;
+  padding: 72px 44px 60px;
+}
+.p3-bg-text-r {
+  position: absolute; bottom: -4vw; right: -2vw;
+  font-size: clamp(80px, 14vw, 180px);
+  color: rgba(255, 255, 255, 0.018);
+  letter-spacing: -6px; pointer-events: none;
+  user-select: none; white-space: nowrap;
+}
+.p3-gallery-head {
+  display: flex; align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 6px; flex-wrap: wrap; gap: 12px;
+}
+.p3-gallery-title {
+  font-size: clamp(40px, 7vw, 72px);
+  letter-spacing: 4px; line-height: 0.9;
+}
+.p3-gallery-title .accent { color: #c4001a; }
+.p3-gallery-sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px; color: rgba(196, 0, 26, 0.55);
+  letter-spacing: 2px; margin-top: 8px; margin-bottom: 20px;
+}
+.p3-head-rule {
+  width: 100%; height: 1px;
+  background: linear-gradient(to right, rgba(42, 92, 168, 0.35), transparent);
+  margin-bottom: 20px;
+}
+.p3-back {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 13px; letter-spacing: 3px;
+  color: rgba(255, 255, 255, 0.38);
+  background: none; border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 5px 14px; cursor: pointer;
+  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  transition: color 0.15s, border-color 0.15s;
+}
+.p3-back:hover { color: #fff; border-color: rgba(196, 0, 26, 0.6); }
+
+/* Category filters */
+.p3-cats {
+  display: flex; gap: 2px;
+  margin-bottom: 28px; flex-wrap: wrap;
+}
+.p3-cat {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 12px; letter-spacing: 3px;
+  color: rgba(255, 255, 255, 0.32);
+  background: none; border: none; cursor: pointer;
+  padding: 6px 16px; position: relative;
+  clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+  transition: color 0.15s;
+}
+.p3-cat::before {
+  content: ''; position: absolute; inset: 0;
+  background: rgba(42, 92, 168, 0);
+  clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+  transition: background 0.15s;
+}
+.p3-cat:hover { color: rgba(255, 255, 255, 0.65); }
+.p3-cat:hover::before { background: rgba(42, 92, 168, 0.18); }
+.p3-cat.sel { color: #fff; }
+.p3-cat.sel::before { background: rgba(42, 92, 168, 0.38); }
+.p3-cat-bar {
+  position: absolute; bottom: 0; left: 6px; right: 6px;
+  height: 2px; background: #c4001a;
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.2s ease;
+}
+.p3-cat.sel .p3-cat-bar { transform: scaleX(1); }
+
+/* Photo grid */
+.p3-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+.p3-card {
+  position: relative; cursor: pointer; overflow: hidden;
+  opacity: 0; transform: translateY(18px);
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+  background: #070c1c;
+}
+.p3-card.in { opacity: 1; transform: translateY(0); }
+.p3-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 40%, rgba(4, 6, 15, 0.97) 100%);
+  z-index: 2; pointer-events: none;
+}
+.p3-card::after {
+  content: ''; position: absolute; inset: 0;
+  border: 1px solid rgba(42, 92, 168, 0.22);
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+  z-index: 3; pointer-events: none;
+  transition: border-color 0.2s;
+}
+.p3-card:hover::after { border-color: rgba(196, 0, 26, 0.55); }
+.p3-card-img {
+  width: 100%; aspect-ratio: 4 / 3;
+  object-fit: cover; display: block;
+  transition: transform 0.45s ease;
+}
+.p3-card:hover .p3-card-img { transform: scale(1.06); }
+.p3-card-num {
+  position: absolute; top: 9px; right: 12px; z-index: 4;
+  font-size: 10px; letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.18);
+}
+.p3-card-info {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 10px 12px; z-index: 4;
+}
+.p3-card-title {
+  font-size: 16px; letter-spacing: 2px;
+  color: #fff; line-height: 1.1;
+}
+.p3-card-meta {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px; color: rgba(196, 0, 26, 0.75);
+  letter-spacing: 1px; margin-top: 4px;
+}
+.p3-card-corner {
+  position: absolute; top: 0; right: 0; z-index: 4;
+  width: 14px; height: 14px; background: #c4001a;
+  clip-path: polygon(100% 0, 0 0, 100% 100%);
+  pointer-events: none;
+}
+.p3-card-overlay {
+  position: absolute; inset: 0; z-index: 1;
+  background: rgba(42, 92, 168, 0);
+  transition: background 0.25s; pointer-events: none;
+}
+.p3-card:hover .p3-card-overlay { background: rgba(42, 92, 168, 0.06); }
+
+/* ─── LIGHTBOX ──────────────────────────────── */
+.p3-lb {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(4, 6, 15, 0.97);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px; animation: lbIn 0.25s ease;
+}
+@keyframes lbIn { from { opacity: 0; } to { opacity: 1; } }
+.p3-lb-wrap {
+  position: relative; max-width: 880px; width: 100%;
+}
+.p3-lb-bar {
+  position: absolute; left: -14px; top: 0; bottom: 0;
+  width: 4px;
+  background: linear-gradient(to bottom, #c4001a, transparent);
+}
+.p3-lb-img {
+  width: 100%; max-height: 68vh;
+  object-fit: contain; display: block;
+  clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+  border: 1px solid rgba(42, 92, 168, 0.38);
+}
+.p3-lb-foot {
+  display: flex; align-items: flex-start;
+  justify-content: space-between;
+  margin-top: 14px; flex-wrap: wrap; gap: 12px;
+}
+.p3-lb-title { font-size: 26px; letter-spacing: 4px; }
+.p3-lb-meta {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px; color: #c4001a;
+  letter-spacing: 1px; margin-top: 3px;
+}
+.p3-lb-actions {
+  display: flex; gap: 10px;
+  align-items: center; flex-shrink: 0;
+}
+.p3-lb-dl {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 13px; letter-spacing: 3px;
+  color: #fff; background: rgba(196, 0, 26, 0.85);
+  border: none; padding: 7px 18px; cursor: pointer;
+  text-decoration: none; display: inline-block;
+  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  transition: background 0.15s;
+}
+.p3-lb-dl:hover { background: #c4001a; }
+.p3-lb-close {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 13px; letter-spacing: 3px;
+  color: rgba(255, 255, 255, 0.38);
+  background: none; border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 7px 14px; cursor: pointer;
+  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  transition: color 0.15s, border-color 0.15s;
+}
+.p3-lb-close:hover { color: #fff; border-color: rgba(196, 0, 26, 0.6); }
+.p3-lb-arrow {
+  position: absolute; top: 40%; transform: translateY(-50%);
+  font-family: 'Bebas Neue', sans-serif; font-size: 22px;
+  color: rgba(255, 255, 255, 0.22);
+  background: none; border: none; cursor: pointer;
+  padding: 12px 8px; transition: color 0.15s; user-select: none;
+}
+.p3-lb-arrow:hover { color: rgba(255, 255, 255, 0.75); }
+.p3-lb-arrow.prev { left: -44px; }
+.p3-lb-arrow.next { right: -44px; }
+
+/* ─── ABOUT SCREEN ──────────────────────────── */
+.p3-about-screen {
+  position: relative; width: 100%; min-height: 100svh;
+  padding: 80px 48px 60px;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.p3-about-title {
+  font-size: clamp(48px, 8vw, 78px);
+  letter-spacing: 4px; line-height: 0.9;
+}
+.p3-about-title .accent { color: #c4001a; }
+.p3-divider {
+  width: 56px; height: 2px;
+  background: linear-gradient(to right, #c4001a, transparent);
+  margin: 28px 0;
+}
+.p3-about-body {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px; color: rgba(255, 255, 255, 0.45);
+  max-width: 460px; line-height: 2; letter-spacing: 0.5px;
+}
+.p3-stats {
+  display: flex; gap: 44px;
+  margin-top: 36px; flex-wrap: wrap;
+}
+.p3-stat-n { font-size: 58px; color: #2a5ca8; line-height: 1; }
+.p3-stat-l {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px; color: rgba(255, 255, 255, 0.28);
+  letter-spacing: 2px; margin-top: 4px;
+}
+
+/* ─── TRANSITIONS ───────────────────────────── */
+.p3-screen-in {
+  animation: screenIn 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes screenIn {
+  from { opacity: 0; transform: translateX(-20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
